@@ -1,0 +1,20 @@
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualNode
+metadata:
+  name: frontend-vn
+  namespace: 3-tier-app-eks
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  listeners:
+  - portMapping:
+      port: 80
+      protocol: http
+  serviceDiscovery:
+    dns:
+      hostname: frontend.3-tier-app-eks.svc.cluster.local
+  backends:
+  - virtualService:
+      virtualServiceRef:
+        name: backend-vs

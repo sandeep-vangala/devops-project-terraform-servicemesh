@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-migration
+  namespace: 3-tier-app-eks
+spec:
+  template:
+    spec:
+      containers:
+      - name: migration
+        image: postgres:15
+        command: ["psql", "-h", "postgres-db.3-tier-app-eks.svc.cluster.local", "-U", "postgresadmin", "-d", "postgres", "-f", "/migrations/init.sql"]
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: migrations
+          mountPath: /migrations
+      volumes:
+      - name: migrations
+        configMap:
+          name: app-config
+      restartPolicy: Never

@@ -1,0 +1,13 @@
+- name: Configure EC2 for 3-tier app
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: present
+    - name: Start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes

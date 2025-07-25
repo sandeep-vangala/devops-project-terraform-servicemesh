@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: 3-tier-app-eks
+  labels:
+    app: backend
+    appmesh.k8s.aws/sidecarInjectorWebhook: enabled
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: <AWS_ACCOUNT_ID>.dkr.ecr.us-west-2.amazonaws.com/3-tier-app-backend:production-latest
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: app-config
+        - secretRef:
+            name: db-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: 3-tier-app-eks
+  annotations:
+    appmesh.k8s.aws/virtualNode: backend-vn
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 8000
+    targetPort: 8000

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+  namespace: 3-tier-app-eks
+spec:
+  type: ExternalName
+  externalName: <RDS_ENDPOINT> # Replace with actual RDS endpoint
+  ports:
+  - port: 5432

@@ -1,0 +1,30 @@
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualService
+metadata:
+  name: backend-vs
+  namespace: 3-tier-app-eks
+spec:
+  provider:
+    virtualRouter:
+      virtualRouterRef:
+        name: backend-vr
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualRouter
+metadata:
+  name: backend-vr
+  namespace: 3-tier-app-eks
+spec:
+  listeners:
+  - portMapping:
+      port: 8000
+      protocol: http
+  routes:
+  - name: backend-route
+    match:
+      prefix: /
+    action:
+      weightedTarget:
+      - virtualNodeRef:
+          name: backend-vn
+        weight: 100
